@@ -15,13 +15,18 @@ import Divider from "../components/Divider.astro";
     <h1 class="text-accent text-6xl md:text-5xl lg:text-6xl font-black font-['Doto'] mb-6 mt-6">
       Divide
     </h1>
-    <p class="text-primary text-2xl md:text-3xl font-light font-body leading-relaxed mb-2">
+   <p class="text-primary text-xl md:text-3xl font-light font-body leading-relaxed mb-2">
       Calculate your rent based on your income.
     </p>
   </div>
 
   <!-- Circle illustration -->
-  <Dotcircle />
+   	<div class="py-6 items-center justify-center flex flex-col md:gap-1 md:py-5">
+  		<Dotcircle />
+		<p class="text-primary text-md md:text-xl font-['Doto']" >
+			Income distribution    
+		</p>
+	</div>
 
   <!-- Total amount result cards -->
   <Resultcards person1Amount="0" person2Amount="0" />
