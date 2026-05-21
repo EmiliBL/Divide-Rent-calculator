@@ -1,47 +1,23 @@
 ---
-import { div } from "motion/react-client";
+const { variant = "primary", size = "medium", id } = Astro.props;
 
+// Base styling — shared across all buttons
+const buttonStyling = "w-full rounded-3xl inline-flex justify-center items-center cursor-pointer transition-opacity duration-200 hover:opacity-80 active:opacity-60";
 
-// Henter parametrene fra Astro.props
-
-const { variant= "primary", size = "medium" } = Astro.props; 
-
- 
-//Definer den styling (Tailwind classes, der gør sig gældende for alle knapper
-const buttonStyling = "border-double border-4 p-8 rounded-xl hover:bg-red-600 active:bg-red-700 hover:text-white duration-1000 cursor-pointer hover:skew-x-20"; 
-
- 
-//Definer den styling (Tailwind classes), der gør sig gældende for de forskellige varianter 
-
+// Variant styling
 const variantClasses = {
-
-"primary": "text-blue-600/100",
-
-"secondary": "text-white bg-red-500 underline hover:bg-blue-600",
-
+  "primary":   "bg-accent text-primary",
+  "secondary": "bg-transparent text-primary outline outline-1 outline-dashed outline-accent",
 };
 
- 
-//Definer den styling (Tailwind classes), der gør sig gældende for de forskelligeog størrelser.
-
+// Size styling — responsive, Tailwind values only
 const sizeClasses = {
-
-"large": "text-xl font-bold",
-
-"medium": "text-m font-semibold",
-
-"small": "text-s font-light hover:-skew-x-20",
-
+  "large":  "h-11 px-8 text-xl font-bold font-['Doto'] md:h-12 md:px-10 md:text-2xl lg:h-14 lg:px-12 lg:text-3xl",
+  "medium": "h-11 px-6 text-base font-bold font-['Doto'] md:h-11 md:px-7 md:text-lg lg:h-12 lg:px-8 lg:text-xl",
+  "small":  "h-9  px-4 text-sm  font-bold font-['Doto'] md:h-10 md:px-5 md:text-base lg:h-11 lg:px-6 lg:text-lg",
 };
-
 ---
 
-<!--Sæt classes for den pågældende knap sammen ved hjælp af Astros class:list -->
-
-<button class:list={[buttonStyling, variantClasses[variant], sizeClasses[size]]}><slot /></button>
-
-
-
-<!-- Øvelse omkring knap styling <div>
-    <button class="border-double border-4 text-blue-600/100 p-8 rounded-xl hover:bg-red-600 active:bg-red-700 hover:text-white duration-1000 cursor-pointer ..."><slot /></button>
-</div> -->
+<button id={id} class:list={[buttonStyling, variantClasses[variant], sizeClasses[size]]}>
+  <slot />
+</button>

@@ -1,0 +1,118 @@
+---
+---
+
+<div class="w-full flex justify-center items-center py-6 md:py-8 lg:py-10">
+  <canvas id="dot-circle"></canvas>
+</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────
+  const DOT_RADIUS  = 5;
+  const RING_GAP    = 22;
+  const RINGS       = 4;
+  const COLOR_A     = "#FEEA00";
+  const COLOR_B     = "#272727";
+  const COLOR_EMPTY = "#272727";
+
+  // ── Setup canvas — sharp on all screens ─────────────────
+  function setupCanvas() {
+    const canvas = document.getElementById("dot-circle") as HTMLCanvasElement;
+    if (!canvas) return null;
+
+    const dpr        = window.devicePixelRatio || 1;
+    const cssSize    = getCSSSize();
+
+    // Set actual pixel buffer to cssSize × dpr
+    canvas.width     = cssSize * dpr;
+    canvas.height    = cssSize * dpr;
+
+    // Keep CSS display size correct
+    canvas.style.width  = `${cssSize}px`;
+    canvas.style.height = `${cssSize}px`;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    // Scale all drawing operations by dpr
+    ctx.scale(dpr, dpr);
+
+    return { canvas, ctx, cssSize };
+  }
+
+  // ── Responsive CSS size ──────────────────────────────────
+  function getCSSSize() {
+    const w = window.innerWidth;
+    if (w >= 1024) return 300; // lg
+    if (w >= 768)  return 260; // md
+    return 220;                // sm default
+  }
+
+  // ── Build dot positions (radial grid) ───────────────────
+  function buildDots(cx: number, cy: number) {
+    const dots: { x: number; y: number }[] = [];
+    dots.push({ x: cx, y: cy });
+
+    for (let ring = 1; ring <= RINGS; ring++) {
+      const count  = ring * 6;
+      const radius = ring * RING_GAP;
+      for (let i = 0; i < count; i++) {
+        const angle = (2 * Math.PI * i) / count - Math.PI / 2;
+        dots.push({
+          x: cx + radius * Math.cos(angle),
+          y: cy + radius * Math.sin(angle),
+        });
+      }
+    }
+    return dots;
+  }
+
+  // ── Shuffle (Fisher-Yates) ───────────────────────────────
+  function shuffle(arr: number[]) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // ── Draw ─────────────────────────────────────────────────
+  function draw(pct1: number) {
+    const setup = setupCanvas();
+    if (!setup) return;
+
+    const { ctx, cssSize } = setup;
+    const cx = cssSize / 2;
+    const cy = cssSize / 2;
+
+    ctx.clearRect(0, 0, cssSize, cssSize);
+
+    const dots   = buildDots(cx, cy);
+    const total  = dots.length;
+    const countA = Math.round(pct1 * total);
+
+    const indices = shuffle([...Array(total).keys()]);
+    const setA    = new Set(indices.slice(0, countA));
+
+    dots.forEach((dot, i) => {
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, DOT_RADIUS, 0, 2 * Math.PI);
+      ctx.fillStyle = pct1 === -1
+        ? COLOR_EMPTY
+        : setA.has(i) ? COLOR_A : COLOR_B;
+      ctx.fill();
+    });
+  }
+
+  // ── Init + resize ────────────────────────────────────────
+  let currentPct = -1;
+
+  draw(currentPct);
+
+  window.addEventListener("resize", () => draw(currentPct));
+
+  // ── Public update ────────────────────────────────────────
+  (window as any).updateCircle = (pct1: number) => {
+    currentPct = pct1;
+    draw(pct1);
+  };
+</script>

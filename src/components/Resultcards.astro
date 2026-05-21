@@ -1,0 +1,55 @@
+---
+const {
+  person1Amount = "0",
+  person2Amount = "0",
+} = Astro.props;
+---
+
+<div class="w-full flex flex-col gap-2">
+
+  <!-- Total amount heading -->
+  <div class="text-primary text-3xl font-bold font-['Doto'] md:text-4xl lg:text-5xl">
+    Total amount
+  </div>
+
+  <!-- Two result cards — side by side -->
+  <div class="w-full flex justify-start items-stretch gap-2 md:gap-3 lg:gap-4">
+
+    <!-- Person 1 -->
+    <div class="flex-1 pr-4 py-3.5 flex flex-col justify-center items-center gap-2">
+      <div class="w-full flex flex-col justify-center items-center gap-0.5">
+        <div class="w-full text-primary text-xl font-light font-body leading-5 md:text-2xl">
+          Person 1
+        </div>
+        <div class="w-full text-primary opacity-45 text-sm font-light font-body md:text-base">
+          Total amount to pay
+        </div>
+      </div>
+      <div class="w-full flex justify-start items-center gap-2">
+        <div class="text-accent text-2xl font-black font-['Doto'] md:text-3xl">€</div>
+        <div id="result-amount-1" class="text-accent text-4xl font-black font-['Doto'] md:text-5xl lg:text-6xl">
+          {person1Amount}
+        </div>
+      </div>
+    </div>
+
+    <!-- Person 2 -->
+    <div class="flex-1 pr-4 py-3.5 flex flex-col justify-center items-center gap-2">
+      <div class="w-full flex flex-col justify-center items-center gap-0.5">
+        <div class="w-full text-primary text-xl font-light font-body leading-5 md:text-2xl">
+          Person 2
+        </div>
+        <div class="w-full text-primary opacity-45 text-sm font-light font-body md:text-base">
+          Total amount to pay
+        </div>
+      </div>
+      <div class="w-full flex justify-start items-center gap-2">
+        <div class="text-accent text-2xl font-black font-['Doto'] md:text-3xl">€</div>
+        <div id="result-amount-2" class="text-accent text-4xl font-black font-['Doto'] md:text-5xl lg:text-6xl">
+          {person2Amount}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

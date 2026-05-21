@@ -1,23 +1,138 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import Button from '../components/Button.astro';
-import Link from '../components/Link.astro';
-import { Image } from 'astro:assets';
-
+import Inputfield from "../components/Inputfield.astro";
+import Resultcards from "../components/Resultcards.astro";
+import Dotcircle from "../components/Dotcircle.astro";
+import Divider from "../components/Divider.astro";
 ---
 
-<MainLayout title="Førstegangsforældre">
-<div class="bg-gray-200 min-h-screen flex flex-col items-center justify-center">
-	<div class="grid grid-cols-2 gap-8 p-8">
-		<div class="flex flex-col items-center">
-			<h1 class="ml-24 text-black font-bold text-4xl mb-4 whitespace-nowrap">Alder igennem tiden for forstegangsforældre</h1>
-			<img src="/src/assets/images/chart.svg" class="w-full h-auto rounded-lg shadow-lg">
-		</div>
-		<article class="bg-white p-4 flex flex-col items-center justify-center rounded-lg shadow-lg max-w-md h-48 mt-32">
-			<h2 class="text-black font-bold text-2xl mb-4">Mænd blev først registreret som forstegangsforældre i 1986</h2>
-		</article>
-	</div>
+<MainLayout title="Divide · Calculate your rent based on your income">
+<div class="bg-base min-h-screen flex flex-col items-center justify-center px-4 md:px-6 lg:px-8">
+
+  <!-- Heading -->
+  <div class="text-left w-full">
+    <h1 class="text-accent text-6xl md:text-5xl lg:text-6xl font-black font-['Doto'] mb-6 mt-6">
+      Divide
+    </h1>
+    <p class="text-primary text-2xl md:text-3xl font-light font-body leading-relaxed mb-2">
+      Calculate your rent based on your income.
+    </p>
+  </div>
+
+  <!-- Circle illustration -->
+  <Dotcircle />
+
+  <!-- Total amount result cards -->
+  <Resultcards person1Amount="0" person2Amount="0" />
+
+  <!-- Divider -->
+  <Divider />
+
+  <!-- Input fields -->
+  <div class="w-full flex flex-col justify-start items-start gap-1.5 md:gap-2 lg:gap-3">
+	  <!-- Total amount heading -->
+  	<div class="text-primary text-3xl font-bold font-['Doto'] md:text-4xl lg:text-5xl py-4">
+    	Insert values here
+  	</div>
+
+    <!-- Total rent — full width -->
+    <div class="w-full flex justify-start items-center">
+      <Inputfield
+        id="total-rent"
+        label="Total rent"
+        subtitle="Insert full amount of rent"
+      />
+    </div>
+
+    <!-- Person 1 + Person 2 — side by side -->
+    <div class="w-full pb-2 flex justify-center items-center gap-2 md:gap-3 lg:gap-4">
+      <Inputfield
+        id="person-1"
+        label="Person 1"
+        subtitle="Insert income"
+      />
+      <Inputfield
+        id="person-2"
+        label="Person 2"
+        subtitle="Insert income"
+      />
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="w-full flex justify-center items-center gap-2 md:gap-3 lg:gap-4 py-4">
+    <div class="flex-1">
+      <Button id="btn-reset" variant="secondary" size="medium">Reset values</Button>
+    </div>
+    <div class="flex-1">
+      <Button id="btn-calculate" variant="primary" size="medium">Calculate</Button>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <Divider />
+
 </div>
 </MainLayout>
 
+<script>
+  // ── Element refs ─────────────────────────────────────────
+  const inputTotalRent = document.getElementById("total-rent") as HTMLInputElement;
+  const inputPerson1   = document.getElementById("person-1")   as HTMLInputElement;
+  const inputPerson2   = document.getElementById("person-2")   as HTMLInputElement;
 
+  const resultAmount1  = document.getElementById("result-amount-1");
+  const resultAmount2  = document.getElementById("result-amount-2");
+
+  const btnCalculate   = document.getElementById("btn-calculate");
+  const btnReset       = document.getElementById("btn-reset");
+
+  // ── Core calculation ──────────────────────────────────────
+  function calculate() {
+    const rent    = parseFloat(inputTotalRent?.value) || 0;
+    const income1 = parseFloat(inputPerson1?.value)   || 0;
+    const income2 = parseFloat(inputPerson2?.value)   || 0;
+
+    const totalIncome = income1 + income2;
+
+    // Edge case — no income or rent entered
+    if (totalIncome === 0 || rent === 0) {
+      setResults("—", "—");
+      (window as any).updateCircle?.(-1);
+      return;
+    }
+
+    const pct1 = income1 / totalIncome;
+    const pct2 = income2 / totalIncome;
+
+    const pay1 = (rent * pct1).toFixed(0);
+    const pay2 = (rent * pct2).toFixed(0);
+
+    setResults(pay1, pay2);
+    (window as any).updateCircle?.(pct1);
+  }
+
+  // ── Update result amounts ─────────────────────────────────
+  function setResults(amount1: string, amount2: string) {
+    if (resultAmount1) resultAmount1.textContent = amount1;
+    if (resultAmount2) resultAmount2.textContent = amount2;
+  }
+
+  // ── Reset ─────────────────────────────────────────────────
+  function reset() {
+    if (inputTotalRent) inputTotalRent.value = "";
+    if (inputPerson1)   inputPerson1.value   = "";
+    if (inputPerson2)   inputPerson2.value   = "";
+    setResults("0", "0");
+    (window as any).updateCircle?.(-1);
+  }
+
+  // ── Event listeners ───────────────────────────────────────
+  inputTotalRent?.addEventListener("input", calculate);
+  inputPerson1?.addEventListener("input", calculate);
+  inputPerson2?.addEventListener("input", calculate);
+
+  btnCalculate?.addEventListener("click", calculate);
+  btnReset?.addEventListener("click", reset);
+</script>
