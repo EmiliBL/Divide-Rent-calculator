@@ -4,79 +4,81 @@ import Button from '../components/Button.astro';
 import Inputfield from "../components/Inputfield.astro";
 import Resultcards from "../components/Resultcards.astro";
 import Dotcircle from "../components/Dotcircle.astro";
-import Divider from "../components/Divider.astro";
 ---
 
 <MainLayout title="Divide · Calculate your rent based on your income">
-<div class="bg-base min-h-screen flex flex-col items-center justify-center px-4 md:px-6 lg:px-8">
+<div class="bg-base min-h-screen px-4 md:px-6 lg:px-8 py-10 md:py-16 lg:py-20">
 
-  <!-- Heading -->
-  <div class="text-left w-full">
-    <h1 class="text-accent text-6xl md:text-5xl lg:text-6xl font-black font-['Doto'] mb-6 mt-6">
+  <!-- Heading — always full width -->
+ 
+
+  <!-- Two column layout on md+ — left: circle + results / right: inputs + CTAs -->
+  <div class="w-full flex flex-col md:flex-row md:gap-12 lg:gap-20 md:items-start">
+
+    <!-- LEFT COLUMN — circle + results -->
+    <div id="results-top" class="w-full md:w-1/2 flex flex-col gap-4 md:sticky md:top-10">
+       <div class="w-full mb-2 md:mb-12">
+    <h1 class="text-accent text-6xl font-bold font-['Doto'] mb-4">
       Divide
     </h1>
-   <p class="text-primary text-xl md:text-3xl font-light font-body leading-relaxed mb-2">
-      Calculate your rent based on your income.
+    <p class="text-primary text-base md:text-lg font-light font-body leading-relaxed">
+      Split rent objective. Fairly based on income.
+    </p>
+
+     <p class="mt-2 text-primary opacity-40 text-s md:text-base font-light font-body leading-relaxed">
+      Ensures both partners maintain a comparable quality of life and can save equally for the future.
     </p>
   </div>
+      <!-- Circle -->
+      <Dotcircle />
 
-  <!-- Circle illustration -->
-   	<div class="py-6 items-center justify-center flex flex-col md:gap-1 md:py-5">
-  		<Dotcircle />
-		<p class="text-primary text-md md:text-xl font-['Doto']" >
-			Income distribution    
-		</p>
-	</div>
-
-  <!-- Total amount result cards -->
-  <Resultcards person1Amount="0" person2Amount="0" />
-
-  <!-- Divider -->
-  <Divider />
-
-  <!-- Input fields -->
-  <div class="w-full flex flex-col justify-start items-start gap-1.5 md:gap-2 lg:gap-3">
-	  <!-- Total amount heading -->
-  	<div class="text-primary text-3xl font-bold font-['Doto'] md:text-4xl lg:text-5xl py-4">
-    	Insert values here
-  	</div>
-
-    <!-- Total rent — full width -->
-    <div class="w-full flex justify-start items-center">
-      <Inputfield
-        id="total-rent"
-        label="Total rent"
-        subtitle="Insert full amount of rent"
-      />
     </div>
 
-    <!-- Person 1 + Person 2 — side by side -->
-    <div class="w-full pb-2 flex justify-center items-center gap-2 md:gap-3 lg:gap-4">
-      <Inputfield
-        id="person-1"
-        label="Person 1"
-        subtitle="Insert income"
-      />
-      <Inputfield
-        id="person-2"
-        label="Person 2"
-        subtitle="Insert income"
-      />
-    </div>
-  </div>
+    <!-- RIGHT COLUMN — inputs + CTAs -->
+    <div class="w-full md:w-1/2 flex flex-col gap-4 mt-8 md:mt-0">
+      <!-- Result cards -->
+      <Resultcards person1Amount="0" person2Amount="0" />
 
-  <!-- Action buttons -->
-  <div class="w-full flex justify-center items-center gap-2 md:gap-3 lg:gap-4 py-4">
-    <div class="flex-1">
-      <Button id="btn-reset" variant="secondary" size="medium">Reset values</Button>
-    </div>
-    <div class="flex-1">
-      <Button id="btn-calculate" variant="primary" size="medium">Calculate</Button>
+      <h1 class="text-primary text-xl font-light font-body tracking-wide md:text-2xl lg:text-3xl">
+      Calculate your split
+      </h1>
+      <!-- Input fields -->
+      <div class="w-full flex flex-col gap-2 md:gap-3">
+
+        <!-- Total rent — full width -->
+        <Inputfield
+          id="total-rent"
+          label="Total rent"
+          subtitle="Insert full amount of rent"
+        />
+
+        <!-- Person 1 + Person 2 — side by side -->
+        <div class="w-full flex gap-4 md:gap-6">
+          <Inputfield
+            id="person-1"
+            label="Person 1"
+            subtitle="Insert income"
+          />
+          <Inputfield
+            id="person-2"
+            label="Person 2"
+            subtitle="Insert income"
+          />
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="w-full flex gap-2 md:gap-3">
+        <div class="flex-1">
+          <Button id="btn-reset" variant="secondary" size="medium">Reset values</Button>
+        </div>
+        <div class="flex-1">
+          <Button id="btn-calculate" variant="primary" size="medium">Calculate</Button>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <!-- Divider -->
-  <Divider />
 
 </div>
 </MainLayout>
@@ -101,7 +103,6 @@ import Divider from "../components/Divider.astro";
 
     const totalIncome = income1 + income2;
 
-    // Edge case — no income or rent entered
     if (totalIncome === 0 || rent === 0) {
       setResults("—", "—");
       (window as any).updateCircle?.(-1);
@@ -116,6 +117,14 @@ import Divider from "../components/Divider.astro";
 
     setResults(pay1, pay2);
     (window as any).updateCircle?.(pct1);
+  }
+
+  // ── Calculate + scroll — CTA only ────────────────────────
+  function calculateAndScroll() {
+    calculate();
+    if (window.innerWidth < 768) {
+      document.getElementById("results-top")?.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   // ── Update result amounts ─────────────────────────────────
@@ -138,6 +147,6 @@ import Divider from "../components/Divider.astro";
   inputPerson1?.addEventListener("input", calculate);
   inputPerson2?.addEventListener("input", calculate);
 
-  btnCalculate?.addEventListener("click", calculate);
+  btnCalculate?.addEventListener("click", calculateAndScroll);
   btnReset?.addEventListener("click", reset);
 </script>
